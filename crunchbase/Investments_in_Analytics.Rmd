@@ -1,0 +1,42 @@
+---
+title: "Analyzing Investments in Analytics"
+output: html_document
+---
+
+rcrunchbase is an R client to the CrunchBase API (https://developer.crunchbase.com/), supplemented with helpful functions that aim to create a compositional query flow. As much as possible, complex queries can be built up from simple requests. The intent is for rcrunchbase can handle the messy stuff while you focus on getting the data you want.
+
+
+```{r setup}
+install.packages("devtools")
+devtools::install_github("tarakc02/rcrunchbase")
+```
+
+You can also embed plots, for example:
+
+```{r, echo=FALSE}
+library(rcrunchbase)
+library(magrittr)
+ra <- crunchbase_get_details("organization/revolution-computing")
+ls.str(ra[[1]])
+names(ra[[1]])
+str(ra[[1]]$relationships)
+```
+
+crunchbase_expand_section(ra, "current_team")
+crunchbase_expand_section(fb, c("current_team", "past_team"))
+
+These three functions can be combined in diverse ways, resulting in a much richer and more expressive approach to the API. To take full advantage of the compositional nature of these functions, it’s useful to have a “piping” operator to pass results of one function to inputs for the next function. I prefer the %>% operator from the magrittr package.
+
+library(magrittr)
+
+ra_invests <- crunchbase_expand_section(ra, c("current_team", "past_team")) %>%
+    crunchbase_get_details %>%
+    crunchbase_expand_section("investments")
+ra_invests$invested_in.name
+
+fb <- crunchbase_get_details("organization/paypal")
+fb_invests <- crunchbase_expand_section(ra, c("current_team", "past_team")) %>%
+    crunchbase_get_details %>%
+    crunchbase_expand_section("investments")
+fb_invests$invested_in.name
+x <- crunchbase_get_collection("category/analytics")
