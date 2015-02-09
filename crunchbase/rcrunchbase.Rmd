@@ -1,0 +1,38 @@
+---
+title: "rcrunchbase - An API Interface to Crunchbase"
+output: html_document
+---
+
+Information about the technology business ecosystems is valuable to both established companies as well as startups. Fortunately CrunchBase - the world’s most comprehensive dataset of startup activity,  captures quite a bit of such information 
+Founded in 2007 by Mike Arrington, CrunchBase began as a simple crowd sourced database to track startups covered on TechCrunch.  Today you’ll find about 650k profiles of people and companies that are maintained by tens of thousands of contributors.
+Venture Capital firms have willingly shared this information so that others could benefit. It's also accessible to everyone as APIs and to researches as downloadable workbook.  
+
+rcrunchbase is an R client to the CrunchBase API (https://developer.crunchbase.com/) developed by Tarak Shah of UC Berkeley. It has several helpful functions that aim to create a compositional query flow. As much as possible, complex queries can be built up from simple requests. The intent is to have rcrunchbase  handle the messy stuff while you focus on getting the data you want.
+
+As an example, let us explore relationship between the companies through the founding teams. For example 'Paypal Mafia' is a group of former PayPal employees and founders who have since founded and developed additional technology companies such as Tesla Motors, LinkedIn, Palantir Technologies, SpaceX, YouTube, Yelp, and Yammer. You can read about Paypal mafia in [wikipedia](http://en.wikipedia.org/wiki/PayPal_Mafia)
+
+Let's find out more about the Paypal Mafia from crunchbase. 
+
+```{r, echo=FALSE}
+library(rcrunchbase)
+library(magrittr)
+pp <- crunchbase_get_details("organization/paypal")
+ls.str(pp[[1]])
+names(pp[[1]])
+str(pp[[1]]$relationships)
+crunchbase_expand_section(pp, c("current_team", "past_team"))
+```
+
+These three functions can be combined in diverse ways, resulting in a much richer and more expressive approach to the API. To take full advantage of the compositional nature of these functions, it’s useful to have a “piping” operator to pass results of one function to inputs for the next function. 
+
+```{r Paypal-Mafia}
+library(magrittr)
+pp_invests <- crunchbase_expand_section(pp, c("current_team", "past_team")) %>%
+    crunchbase_get_details %>%
+    crunchbase_expand_section("investments")
+pp_invests$invested_in.name
+```
+
+That's over 300 companies!
+
+What interesting questions do you have with such rich data on the startup ecosystems?
