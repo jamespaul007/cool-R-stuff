@@ -7,7 +7,7 @@ Information about the technology business ecosystems is valuable to both establi
 Founded in 2007 by Mike Arrington, CrunchBase began as a simple crowd sourced database to track startups covered on TechCrunch.  Today you’ll find about 650k profiles of people and companies that are maintained by tens of thousands of contributors.
 Venture Capital firms have willingly shared this information so that others could benefit. It's also accessible to everyone as APIs and to researches as downloadable workbook.  
 
-rcrunchbase is an R client to the CrunchBase API (https://developer.crunchbase.com/) developed by Tarak Shah of UC Berkeley. It has several helpful functions that aim to create a compositional query flow. As much as possible, complex queries can be built up from simple requests. The intent is to have rcrunchbase  handle the messy stuff while you focus on getting the data you want.
+rcrunchbase is an R client to the [CrunchBase API] (https://developer.crunchbase.com/) developed by Tarak Shah of UC Berkeley. It has several helpful functions that aim to create a compositional query flow. As much as possible, complex queries can be built up from simple requests. The intent is to have rcrunchbase  handle the messy stuff while you focus on getting the data you want.
 
 As an example, let us explore relationship between the companies through the founding teams. For example 'Paypal Mafia' is a group of former PayPal employees and founders who have since founded and developed additional technology companies such as Tesla Motors, LinkedIn, Palantir Technologies, SpaceX, YouTube, Yelp, and Yammer. You can read about Paypal mafia in [wikipedia](http://en.wikipedia.org/wiki/PayPal_Mafia)
 
@@ -35,4 +35,4 @@ pp_invests$invested_in.name
 
 That's over 300 companies!
 
-What interesting questions do you have with such rich data on the startup ecosystems?
+What interesting questions do you have with such rich data on the startup ecosystems? Please comment below...
