@@ -11,19 +11,23 @@ rcrunchbase is an R client to the [CrunchBase API] (https://developer.crunchbase
 
 As an example, let us explore relationship between the companies through the founding teams. For example 'Paypal Mafia' is a group of former PayPal employees and founders who have since founded and developed additional technology companies such as Tesla Motors, LinkedIn, Palantir Technologies, SpaceX, YouTube, Yelp, and Yammer. You can read about Paypal mafia in [wikipedia](http://en.wikipedia.org/wiki/PayPal_Mafia)
 
-Let's find out more about the Paypal Mafia from crunchbase. 
+Let's find out more about the Paypal Mafia from crunchbase. You'll need to signup for crunchbase API access [here](https://developer.crunchbase.com/)
+
+The following piece of code lists the current team and past team of Paypal in Crunchbase. 
 
 ```{r, echo=FALSE}
 library(rcrunchbase)
 library(magrittr)
+# Start by looking up the node details of a company
 pp <- crunchbase_get_details("organization/paypal")
 ls.str(pp[[1]])
 names(pp[[1]])
+# get the path to pull the collections corresponding to the companies “current team” and "past team"
 str(pp[[1]]$relationships)
 crunchbase_expand_section(pp, c("current_team", "past_team"))
 ```
 
-These three functions can be combined in diverse ways, resulting in a much richer and more expressive approach to the API. To take full advantage of the compositional nature of these functions, it’s useful to have a “piping” operator to pass results of one function to inputs for the next function. 
+These three functions can be combined in diverse ways, resulting in a much richer and more expressive approach to the API. To take full advantage of the compositional nature of these functions, it’s useful to have a “piping” operator to pass results of one function to inputs for the next function. For example, one could find the list of companies that Paypal's current team and past team have invested in.
 
 ```{r Paypal-Mafia}
 library(magrittr)
