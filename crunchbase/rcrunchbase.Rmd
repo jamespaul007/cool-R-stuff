@@ -33,6 +33,8 @@ pp_invests <- crunchbase_expand_section(pp, c("current_team", "past_team")) %>%
 pp_invests$invested_in.name
 ```
 
-That's over 300 companies!
+That's over 300 companies! That's a huge impact by the Paypal Mafia.
+
+The crunchbase database is a graph database and using the API may be time consuming. Crunchbase also publishes a xls workbook with information on companies, funding rounds, and acquisitions. (Available for Academics and Crunchbase Venture partners). More about that in another blog post.
 
 What interesting questions do you have with such rich data on the startup ecosystems? Please comment below...
