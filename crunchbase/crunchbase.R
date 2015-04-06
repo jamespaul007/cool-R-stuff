@@ -1,7 +1,42 @@
+library(openxlsx)
+library(rcrunchbase)
+library(dplyr)
+library(stringr)
+library(magrittr)
+
+download.file("http://static.crunchbase.com/exports/crunchbase_monthly_export_d43b4klo2ade53.xlsx",
+              destfile="crunchbase_monthly_export.xlsx",
+              mode="wb")
+sheets <- c("Companies", "Rounds", "Investments", "Acquisitions")
+monthly_export <- lapply(sheets, function(x) {
+  read.xlsx("crunchbase_monthly_export.xlsx", 
+            sheet = x)
+})
+names(monthly_export) <- tolower(sheets)
+
+acquired_employees <- tbl_df(monthly_export$acquisitions) %>%
+  filter(acquired_month == "2014-11") %>%
+  transmute(company_permalink = str_sub(company_permalink, start=2)) %>%
+  crunchbase_get_details(df_path = "company_permalink") %>%
+  crunchbase_expand_section("current_team")
+
+cal_acquired <- acquired_employees %>% 
+  crunchbase_get_details(filter = filter_cal)
+
+cal_acquired %>% 
+  crunchbase_strip_list %>%
+  write.csv("cb_acquired_nov2014.csv", row.names=FALSE)
+
 library(reshape)
 library(plyr)
 library(ggplot2)
-data <- read.csv('crunchbase_monthly_export_201403_investments.csv', sep=';', stringsAsFactors=F)
+
+require(xlsx)
+file <- system.file("crunchbase_monthly_export.xlsx")
+
+companies <- read.xlsx(file, 3)
+
+data <- read.csv("crunchbase_monthly_export.xlsx", sep=';', stringsAsFactors=F)
 inv <- data[,c("investor_name", "company_name", "company_category_code", "raised_amount_usd", "investor_category_code")]
 inv$raised_amount_usd[is.na(inv$raised_amount_usd)] <- 1
 
