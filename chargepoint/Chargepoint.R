@@ -1,13 +1,19 @@
 # Forecasting EV Sales
+install.packages(c('devtools','fpp','dygraphs','forecast','magrittr'))
+library(devtools)
 devtools::install_github('rstudio/dygraphs')
+devtools::install_github('hrbrmstr/metricsgraphics')
 devtools::install_github('ramnathv/htmlwidgets')
 library(dygraphs)
+library(metricsgraphics)
 library(fpp)
 library(forecast)
 library(magrittr)
+library(lubridate)
+library(ggplot2)
 
 # Data from http://insideevs.com/monthly-plug-in-sales-scorecard/
-ev<-read.csv(file.path("~/Documents","EVCSV.csv"))
+ev<-read.csv(file.path("~/Git/cool-R-stuff/chargepoint","EVCSV.csv"))
 evsales<-ts(data=ev$X.1, start= c(2010,12), frequency=12)
 dygraph(evsales, main = "EV Sales in the US") %>% 
   dyRangeSelector()
@@ -46,11 +52,28 @@ plot(forecast(fit1,22))
 # Cannot rule out crossing the chasm
 # http://www.rand.org/content/dam/rand/pubs/working_papers/2012/RAND_WR775.pdf
 
-gp<-read.csv(file.path("~/Documents","gasPrices.csv"))
-gasPrices<-ts(data=gp$Price, start= 2010 + 340/7/365.25, frequency=365.25/7)
-print(gasPrices)
+gp<-read.csv(file.path("~/Git/cool-R-stuff/chargepoint","gasPrice.csv"))
+gp$Date <-ymd(as.character(gp$Date))
+gp$mo <-strftime(gp$Date, "%m")
+gp$yr <-strftime(gp$Date, "%y")
+monthlyGp <- aggregate(Price ~ mo + yr, gp, FUN = mean)
+gasPrices<-ts(data=monthlyGp$Price, start= c(2010,12), frequency=12)
 dygraph(gasPrices, main = "Gas Prices in the US") %>% 
   dyRangeSelector()
+
+mydata<-as.data.frame(cbind(monthlyGp$Price,ev$X.1))
+names(mydata)[1]<-"gasPrice"
+names(mydata)[2]<-"evSales"
+head(mydata)
+
+qplot(gasPrice, evSales, data=mydata)
+library(metricsgraphics)
+mydata %>%
+  mjs_plot(x=gasPrice, y=evSales, width=600, height=500) %>%
+  mjs_point(least_squares=TRUE) %>%
+  mjs_labs(x="Gas Prices", y="Ev Sales")
+
+cor.test(mydata$gasPrice, mydata$evSales, method="pearson")
 
 ## Twitter Sentiment Analysis
 #install the necessary packages
@@ -138,7 +161,9 @@ TweetFrame<-function(searchTerm, maxTweets, oldest=NULL)
   
 }
 
-tf <- rbind(tf, TweetFrame(searchTerm, 100))
+
+
+tf <- TweetFrame(searchTerm, 100)
 
 for i in 1:10{
 oldest <-as.Date(min(tf$created))
@@ -148,7 +173,7 @@ oldest <-as.Date(min(tf$created))
 
 wordcloud<-function(cleantext)
 {
-  tweetCorpus<-Corpus(VectorSource(CleanTweets(entitycleantext)))
+  tweetCorpus<-Corpus(VectorSource(CleanTweets(cleantext)))
   tweetTDM<-TermDocumentMatrix(tweetCorpus,control=list(removePunctuation=TRUE,
                                                         stopwords=c(stopwords('english')),
                                                         removeNumbers=TRUE,tolower=TRUE))
@@ -159,6 +184,12 @@ wordcloud<-function(cleantext)
   wcloud<-wordcloud(cloudFrame$word,cloudFrame$freq,max.words=100, colors=brewer.pal(8,"Dark2"),scale=c(8,1), random.order=TRUE)
   print(wcloud)
 }
+
+
+wordcloud(CleanTweets(tf$text))
+
+
+
 
 
 

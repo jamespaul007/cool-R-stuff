@@ -16,7 +16,7 @@ username <- "YOUR_NAME@gmail.com"
 password <- "YOUR_PASSWORD"
 
 username <- "jamespaul007@gmail.com"
-password <- "Jimbo007"
+password <- "jim001JGD"
 
 # URLs
 loginURL 		<- "https://accounts.google.com/accounts/ServiceLogin"
